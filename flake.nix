@@ -25,11 +25,16 @@
 
           echo "🧬 Initializing containerized OpenCode application engines..."
 
-          export OPENCODE_SERVER_PASSWORD="admin-sandbox-token"
+          # 🧹 Limpieza automática de sockets/procesos previos en el puerto 8642
+          if lsof -pi :8642 -t >/dev/null ; then
+            echo "⚠️ Port 8642 was busy. Cleaning up stale ghost sessions..."
+            kill -9 $(lsof -t -i:8642) 2>/dev/null || true
+          fi
 
           echo "🚀 Launching OpenCode Server at http://127.0.0.1:8642 ..."
-          echo "🔑 opencode / admin-sandbox-token"
+          echo "🌐 Open your browser and start chatting directly."
 
+          # Removido OPENCODE_SERVER_PASSWORD para evitar bloquear los WebSockets locales del chat
           exec ${pkgs.opencode}/bin/opencode web --hostname 127.0.0.1 --port 8642
         '';
 
